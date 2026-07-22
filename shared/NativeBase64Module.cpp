@@ -47,8 +47,6 @@ std::string NativeBase64Module::encode(jsi::Runtime& rt, std::string input) {
 }
 
 std::string NativeBase64Module::decode(jsi::Runtime& rt, std::string input) {
-  size_t input_size = input.size();
-
   std::vector<short int> bit_array;
 
   for (const char& c : input) {
