@@ -7,9 +7,9 @@ namespace facebook::react {
 NativeBase64Module::NativeBase64Module(std::shared_ptr<CallInvoker> jsInvoker)
     : NativeBase64ModuleCxxSpec(std::move(jsInvoker)) {}
 
-std::string NativeBase64Module::encode(jsi::Runtime& rt, std::string input) {
-  const char BASE64[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+const char BASE64[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
+std::string NativeBase64Module::encode(jsi::Runtime& rt, std::string input) {
   size_t input_size = input.size();
 
   std::vector<short int> bit_array;
@@ -47,7 +47,35 @@ std::string NativeBase64Module::encode(jsi::Runtime& rt, std::string input) {
 }
 
 std::string NativeBase64Module::decode(jsi::Runtime& rt, std::string input) {
-  return std::string(input.rbegin(), input.rend());
+  size_t input_size = input.size();
+
+  std::vector<short int> bit_array;
+
+  for (const char& c : input) {
+    if (c == '=') {
+      bit_array.pop_back();
+      bit_array.pop_back();
+      continue;
+    }
+    short int index = strchr(BASE64, c) - BASE64;
+    std::bitset<6> bits(index);
+
+    for (int i = 5; i >= 0; --i) {
+      bit_array.push_back(bits[i]);
+    }
+  }
+
+  std::string result = "";
+
+  for (size_t i = 0; i < bit_array.size(); i += 8) {
+    int dec = 0;
+    for (size_t j = 0; j < 8; ++j) {
+      dec = (dec << 1) | bit_array[i + j];
+    }
+    result += static_cast<char>(dec);
+  }
+
+  return result;
 }
 
 } // namespace facebook::react
