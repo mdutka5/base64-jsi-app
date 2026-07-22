@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import Base64TurboModule from './specs/NativeBase64Module';
+import { encode, decode } from './nativeModules/Base64Module';
 
 function App(): JSX.Element {
   const [encodeQuery, setEncodeQuery] = useState('');
@@ -19,11 +19,11 @@ function App(): JSX.Element {
   const [decodedValue, setDecodedValue] = useState('');
 
   const handleEncodePress = () => {
-    setEncodedValue(Base64TurboModule.encode(encodeQuery));
+    setEncodedValue(encode(encodeQuery));
   };
 
   const handleDecodePress = () => {
-    setDecodedValue(Base64TurboModule.decode(decodeQuery));
+    setDecodedValue(decode(decodeQuery));
   };
 
   return (
@@ -49,6 +49,8 @@ function App(): JSX.Element {
               placeholderTextColor="#9ca3af"
               onChangeText={setEncodeQuery}
               value={encodeQuery}
+              autoCapitalize="none"
+              autoCorrect={false}
             />
             <TouchableOpacity style={styles.button} onPress={handleEncodePress}>
               <Text style={styles.buttonText}>Encode String</Text>
